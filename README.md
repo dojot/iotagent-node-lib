@@ -1,3 +1,12 @@
+# dojot deprecation notice
+
+As dojot's internal achitecture evolved to allow greater iotagent flexibility, iotagents should
+not use this as their base anymore.
+
+For the new base library for iotagents, please refer to: [dojot/iotagent-nodejs](https://github.com/dojot/iotagent-nodejs)
+
+---
+
 # FIWARE IoT Agent Framework
 
 [![License badge](https://img.shields.io/badge/license-AGPL-blue.svg)](https://opensource.org/licenses/AGPL-3.0)
@@ -21,7 +30,7 @@
 ## <a name="overview"/> Overview
 ### Description
 This project aims to provide a Node.js module to enable IoT Agent developers to build custom agents for their devices that can
-easily connect to NGSI Context Brokers (such as [Orion](https://github.com/telefonicaid/fiware-orion) ). 
+easily connect to NGSI Context Brokers (such as [Orion](https://github.com/telefonicaid/fiware-orion) ).
 
 An IoT Agent is a component that lets groups of devices send their data to and be managed from a FIWARE NGSI Context
 Broker using their own native protocols. IoT Agents should also be able to deal with security aspects of the Fiware
@@ -283,20 +292,20 @@ the `version` field will be read from the `iotaVersion` field of the config, if 
 
 ### <a name="provisioningapi"/> Device Provisioning API
 #### Overview
-The IoT Agents offer a provisioning API where devices can be preregistered, so all the information about service and 
-subservice mapping, security information and attribute configuration can be specified in a per device way instead of 
-relaying on the type configuration. The following section specifies the format of the device payload; this will be the 
-payload accepted by all the write operations and that will be returned by all the read operations. Take care of the 
+The IoT Agents offer a provisioning API where devices can be preregistered, so all the information about service and
+subservice mapping, security information and attribute configuration can be specified in a per device way instead of
+relaying on the type configuration. The following section specifies the format of the device payload; this will be the
+payload accepted by all the write operations and that will be returned by all the read operations. Take care of the
 exception of the POST operation: in this case, the device objects must be specified as an array, as multiple devices
 can be provided simultaneusly for the same service.
 
-Two parameters in this payload are given a special treatment: service and subservice. This two parameters are needed to 
-fill the `fiware-service` and `fiware-servicepath` mandatory headers that will be used in the interactions with the 
-Context Broker. This parameters should not be passed along with the rest of the body, but they will be taken from the 
-same headers, as received by the Device Provisioning API (this two headers are, thus, mandatory both for incoming and 
+Two parameters in this payload are given a special treatment: service and subservice. This two parameters are needed to
+fill the `fiware-service` and `fiware-servicepath` mandatory headers that will be used in the interactions with the
+Context Broker. This parameters should not be passed along with the rest of the body, but they will be taken from the
+same headers, as received by the Device Provisioning API (this two headers are, thus, mandatory both for incoming and
 outgoing requests).
 
-Note that there is a 1:1 correspondence between payload fields and DB fields (but using a different capitalization, 
+Note that there is a 1:1 correspondence between payload fields and DB fields (but using a different capitalization,
 e.g. `service_path` vs. `servicePath`).
 
 #### Device model
@@ -322,7 +331,7 @@ the API resource fields and the same fields in the database model.
 | static_attributes   | staticAttributes   | List of static attributes to append to the entity. All the updateContext requests to the CB will have this set of attributes appended.	| `[ { "name": "attr_name", "type": "string" } ]` |
 
 #### Attribute lists
-In the device model there are three list of attributes that can be declared: attributes, lazy and commands. All of them 
+In the device model there are three list of attributes that can be declared: attributes, lazy and commands. All of them
 have the same syntax, an object containing the following attributes:
 * **object_id** (optional): name of the attribute as coming from the device.
 * **name** (mandatory): id of the attribute in the target entity in the Context Broker.
@@ -343,21 +352,21 @@ See the transformation plugins Section for more details.
 
 #### API Actions
 ##### POST /iot/devices
-Provision a new device in the IoT Agent's device registry. Takes a Device in JSON format as the payload. 
+Provision a new device in the IoT Agent's device registry. Takes a Device in JSON format as the payload.
 
-Returns: 
+Returns:
 * 200 OK if successful.
 * 500 SERVER ERROR if there was any error not contemplated above.
 
 Payload example:
 ```json
 {
-    "devices": [ 
-        { 
-            "device_id": "DevID1", 
-            "entity_name": "TheDevice1", 
-            "entity_type": "DeviceType", 
-            "attributes": [ 
+    "devices": [
+        {
+            "device_id": "DevID1",
+            "entity_name": "TheDevice1",
+            "entity_type": "DeviceType",
+            "attributes": [
                   { "object_id": "t", "name": "temperature", "type": "float" },
                   { "object_id": "h", "name": "humidity", "type": "float" }
             ],
@@ -382,7 +391,7 @@ Query parameters:
 * limit: if present, limits the number of devices returned in the list.
 * offset: if present, skip that number of devices from the original query.
 
-Returns: 
+Returns:
 * 200 OK if successful, and the selected Device payload in JSON format.
 * 404 NOT FOUND if the device was not found in the database.
 * 500 SERVER ERROR if there was any error not contemplated above.
@@ -452,7 +461,7 @@ Example of return payload:
 ##### GET /iot/devices/:deviceId
 Returns all the information about a particular device.
 
-Returns: 
+Returns:
 * 200 OK if successful, and the selected Device payload in JSON format.
 * 404 NOT FOUND if the device was not found in the database.
 * 500 SERVER ERROR if there was any error not contemplated above.
@@ -497,7 +506,7 @@ Example of return payload:
 ##### DELETE /iot/devices/:deviceId
 Remove a device from the device registry. No payload is required or received.
 
-Returns: 
+Returns:
 * 200 OK if successful, with no payload.
 * 404 NOT FOUND if the device was not found in the database.
 * 500 SERVER ERROR if there was any error not contemplated above.
@@ -507,15 +516,15 @@ Changes the stored values for the device with the provided Device payload. Neith
 device can be changed using this method (as they are used to link the already created entities in the CB to the information
 in the device). Service and servicepath, being taken from the headers, can't be changed also.
 
-Returns: 
+Returns:
 * 200 OK if successful, with no payload.
 * 404 NOT FOUND if the device was not found in the database.
 * 500 SERVER ERROR if there was any error not contemplated above.
 
 Payload example:
 ```json
-{ 
-    "attributes": [ 
+{
+    "attributes": [
           { "object_id": "t", "name": "temperature", "type": "float" },
           { "object_id": "h", "name": "humidity", "type": "float" },
           { "object_id": "p", "name": "pressure", "type": "float" }
@@ -547,7 +556,7 @@ the IoT Agent we are using). If no name is configured `default` is taken as the 
 Both approaches provide the same configuration information for the types (and they, in fact, end up in the same
 configuration collection).
 
-Both approaches are better described in the sections bellow. 
+Both approaches are better described in the sections bellow.
 
 #### Configuration API
 The following sections show the available operations for the Configuration API. Every operation in the API require the `fiware-service` and `fiware-servicepath` to be defined; the operations are performed in the scope of those headers. For the list case, the special wildcard servicepath can be specified, '/*'. In this case, the operation applies to all the subservices of the service given by the `fiware-service` header.
@@ -616,7 +625,7 @@ E.g.:
 }
 ```
 
-Returns: 
+Returns:
 * 200 OK if successful, with no payload.
 * 400 MISSING_HEADERS if any of the mandatory headers is not present.
 * 400 WRONG_SYNTAX if the body doesn't comply with the schema.
@@ -625,7 +634,7 @@ Returns:
 ##### GET /iot/services
 Retrieves device groups from the database. If the servicepath header has de wildcard expression, '/*', all the subservices for the service are returned. The specific subservice parameters are returned in any other case.
 
-Returns: 
+Returns:
 * 200 OK if successful, returning a device group body.
 * 400 MISSING_HEADERS if any of the mandatory headers is not present.
 * 500 SERVER ERROR if there was any error not contemplated above.
@@ -641,15 +650,15 @@ E.g.:
 }
 ```
 
-Returns: 
+Returns:
 * 200 OK if successful, returning the updated body.
 * 400 MISSING_HEADERS if any of the mandatory headers is not present.
 * 500 SERVER ERROR if there was any error not contemplated above.
 
 ##### DELETE /iot/services
-Removes a device group configuration from the DB, specified by the `resource` and `apikey` query parameters. 
+Removes a device group configuration from the DB, specified by the `resource` and `apikey` query parameters.
 
-Returns: 
+Returns:
 * 200 OK if successful.
 * 400 MISSING_HEADERS if any of the mandatory headers is not present.
 * 500 SERVER ERROR if there was any error not contemplated above.
@@ -702,21 +711,21 @@ Apart from the generation of the trust, the use of secured Context Brokers shoul
 
 ### <a name="datamapping"/> Data mapping plugins
 #### Overview
-The IoT Agent Library provides a plugin mechanism in order to facilitate reusing code that makes small transformations on 
+The IoT Agent Library provides a plugin mechanism in order to facilitate reusing code that makes small transformations on
 incoming data (both from the device and from the context consumers). This mechanism is based in the use of middlewares,
 i.e.: small pieces of code that receive and return an `entity`, making as many changes as they need, but taking care of
 returning a valid entity, that can be used as the input for other middlewares; this way, all those pieces of
 code can be chained together in order to make all the needed transformations in the target entity.
 
 There are two kinds of middlewares: updateContext middlewares and queryContext middlewares. The updateContext middlewares
-are applied before the information is sent to the Context Broker, modifiying the entity before it is sent to Orion. The 
+are applied before the information is sent to the Context Broker, modifiying the entity before it is sent to Orion. The
 queryContext middlewares are applied on the received data, whenever the IoT Agent queries the Context Broker for information.
-I.e.: both middlewares will be automatically applied whenever the `update()` or `query()` functions are called in the 
+I.e.: both middlewares will be automatically applied whenever the `update()` or `query()` functions are called in the
 library.
 
 All the middlewares have the opportunity to break the chain of middleware applications by calling the `callback()` with
 an error object (the usual convention). If any of the updateContext middlewares raise an error, no request will be sent
-to the Context Broker. On the other hand, the queryContext request is always performed, but the call to the `query()` 
+to the Context Broker. On the other hand, the queryContext request is always performed, but the call to the `query()`
 function will end up in an error if any of the queryContext middlewares report an error.
 
 #### Development
@@ -725,23 +734,23 @@ All the middlewares have the same signature:
 function middlewareName(entity, typeInformation, callback) {}
 ```
 The arguments for any middleware are the NGSI data over which it can operate:
-- An updateContext payload in the case of an updateContext middleware and a queryContext payload otherwise; 
+- An updateContext payload in the case of an updateContext middleware and a queryContext payload otherwise;
 - a typeInformation object containing all the information about the device stored during registration.
-- and the customary `callback` parameter, with the usual meaning. It's really important for the library user to call 
-this callback, as failing to do so may hang the IoT Agent completely. The callback must be called with the an optional 
+- and the customary `callback` parameter, with the usual meaning. It's really important for the library user to call
+this callback, as failing to do so may hang the IoT Agent completely. The callback must be called with the an optional
 error in the first argument and the same arguments recieved (potentially modified) as the following.
 
 In order to manage the middlewares to the system, the following functions can be used:
-- `addUpdateMiddleware`: adds an updateContext middleware to the stack of middlewares. All the middlewares will be 
+- `addUpdateMiddleware`: adds an updateContext middleware to the stack of middlewares. All the middlewares will be
 applied to every call to the `update()` function. The final payload of the updateContext request will be the result
 of applying all this middlewares in the order they have been defined.
 
-- `addQueryMiddleware`: adds a queryContext middleware to the stack of middlewares. All the middlewares will be applied 
+- `addQueryMiddleware`: adds a queryContext middleware to the stack of middlewares. All the middlewares will be applied
 to every call to the `query()` function.
 
 - `resetMiddlewares`: remove all the middlewares from the system.
 
-Usually, the full list of middlewares an IoT Agent will use would be added in the IoTAgent start sequence, so they 
+Usually, the full list of middlewares an IoT Agent will use would be added in the IoTAgent start sequence, so they
 should not change a lot during the IoT lifetime.
 
 #### Provided plugins
@@ -755,13 +764,13 @@ iotaLib.addQueryMiddleware(iotaLib.dataPlugins.compressTimestamp.query);
 ```
 
 ##### Timestamp Compression plugin (compressTimestamp)
-This plugins change all the timestamp attributes found in the entity, and all the timestamp metadata found in any 
+This plugins change all the timestamp attributes found in the entity, and all the timestamp metadata found in any
 attribute, from the basic complete calendar timestamp of the ISO8601 (e.g.: 20071103T131805) to the extended
-complete calendar timestamp (e.g.: +002007-11-03T13:18). The middleware expects to receive the basic format in 
-updates and return it in queries (and viceversa, receive the extended one in queries and return it in updates).  
+complete calendar timestamp (e.g.: +002007-11-03T13:18). The middleware expects to receive the basic format in
+updates and return it in queries (and viceversa, receive the extended one in queries and return it in updates).
 
 ##### Attribute Alias plugin (attributeAlias)
-In the Device provision, an id can be specified for each attribute, along with its name. The Id can be used then as 
+In the Device provision, an id can be specified for each attribute, along with its name. The Id can be used then as
 the left part of a mapping from attribute names in the south bound to attribute names in the North Bound. If the id and
 name attributes are used in this way, this plugin makes the translation from one to the other automatically.
 
